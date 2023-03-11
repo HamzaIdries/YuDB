@@ -13,6 +13,14 @@
         }
 
         /// <summary>
+        /// Appends a file filter
+        /// </summary>
+        public void Add(AbstractFileFilter fileFilter)
+        {
+            filters.Add(fileFilter);
+        }
+
+        /// <summary>
         /// Applies the provided list of filters in order
         /// </summary>
         /// <exception cref="FileFilterException"></exception>

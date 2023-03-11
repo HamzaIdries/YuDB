@@ -2,7 +2,7 @@
 using YuDB.Managers;
 using YuDB.Security;
 
-namespace YuDB.JavascriptMapping
+namespace YuDB.Javascript
 {
     public class JavascriptUtility
     {
@@ -26,7 +26,7 @@ namespace YuDB.JavascriptMapping
     /// <summary>
     /// Manages the Javascript interface to the application
     /// </summary>
-    public class JavascriptMapping : IDisposable
+    public class JavascriptMapping : AbstractJavascriptMapping, IDisposable
     {
         private readonly V8ScriptEngine engine;
 
@@ -56,7 +56,7 @@ namespace YuDB.JavascriptMapping
             engine.Dispose();
         }
 
-        public string Evaluate(string command)
+        public override string Evaluate(string command)
         {
             dynamic result = engine.Evaluate(command);
             return engine.Script.prettyPrint(result);

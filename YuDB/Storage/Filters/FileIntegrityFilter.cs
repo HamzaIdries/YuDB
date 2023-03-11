@@ -6,11 +6,11 @@ namespace YuDB.Storage.Filters
     /// Ensures that document have not been illegally modified by checking its HMAC. The used
     /// hash function is SHA256
     /// </summary>
-    public class IntegrityFilter : AbstractFileFilter
+    public class FileIntegrityFilter : AbstractFileFilter
     {
         private readonly byte[] key;
 
-        public IntegrityFilter(byte[] key)
+        public FileIntegrityFilter(byte[] key)
         {
             this.key = key;
         }

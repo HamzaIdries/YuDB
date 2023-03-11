@@ -19,6 +19,6 @@
         /// Checks whether there is a registered user or not by seeing whether there is a valid (non-modified)
         /// password file
         /// </summary>
-        public abstract bool IsUserRegistered();
+        public abstract bool UserRegistered();
     }
 }

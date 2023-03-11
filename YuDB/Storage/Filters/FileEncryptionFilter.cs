@@ -6,20 +6,17 @@ namespace YuDB.Storage.Filters
     /// <summary>
     /// Encrypt a document using AES
     /// </summary>
-    public class EncryptionFilter : AbstractFileFilter, IDisposable
+    public class FileEncryptionFilter : AbstractFileFilter, IDisposable
     {
-        private Aes aes;
-        private byte[] iv;
+        private readonly Aes aes;
 
-        public EncryptionFilter(byte[] iv)
-        {
-            aes = Aes.Create();
-            this.iv = iv;
-        }
+        private readonly byte[] IV;
 
-        public void SetKey(string password)
+        public FileEncryptionFilter(string password, byte[] IV)
         {
             using var sha256 = SHA256.Create();
+            this.IV = IV;
+            aes = Aes.Create();
             aes.Key = sha256.ComputeHash(Encoding.UTF8.GetBytes(password))
                 .Take(32)
                 .ToArray();
@@ -39,7 +36,7 @@ namespace YuDB.Storage.Filters
         {
             try
             {
-                return aes.EncryptCbc(data, iv, PaddingMode.PKCS7);
+                return aes.EncryptCbc(data, IV, PaddingMode.PKCS7);
             }
             catch (Exception ex)
             {
@@ -56,7 +53,7 @@ namespace YuDB.Storage.Filters
         {
             try
             {
-                return aes.DecryptCbc(data, iv, PaddingMode.PKCS7);
+                return aes.DecryptCbc(data, IV, PaddingMode.PKCS7);
             }
             catch (Exception ex)
             {

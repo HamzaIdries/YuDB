@@ -2,20 +2,20 @@
 
 namespace YuDB.Views
 {
-    public class View : IView
+    public class View : AbstractView
     {
         private static int MAX_USERNAME_SIZE = 512;
 
         private static int MAX_PASSWORD_SIZE = 512;
 
-        public void DisplayOutput(string output, ConsoleColor color)
+        public override void DisplayOutput(string output, ConsoleColor color)
         {
             Console.ForegroundColor = color;
             Console.WriteLine(output);
             Console.ResetColor();
         }
 
-        public string GetUserPrompt()
+        public override string GetUserPrompt()
         {
             Console.Write("> ");
             return Console.ReadLine()!;
@@ -47,19 +47,19 @@ namespace YuDB.Views
             return password;
         }
 
-        public Credentials SignIn()
+        public override Credentials SignIn()
         {
             Console.WriteLine("Please enter your credentials to sign in.");
             return new Credentials(ReadUsername(), ReadPassword());
         }
 
-        public Credentials SignUp()
+        public override Credentials SignUp()
         {
             Console.WriteLine("Please enter your credentials to start.");
             return new Credentials(ReadUsername(), ReadPassword());
         }
 
-        public void Welcome()
+        public override void Welcome()
         {
             Console.WriteLine(ViewUtility.ContainWithinRectangle(17, " Welcome to YuDB"));
         }

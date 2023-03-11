@@ -5,33 +5,33 @@ namespace YuDB.Views
     /// <summary>
     /// Represents the part of the application that the user interacts with
     /// </summary>
-    public interface IView
+    public abstract class AbstractView
     {
         /// <summary>
         /// Displays output after command evaluation
         /// </summary>
-        void DisplayOutput(string output, ConsoleColor color);
+        public abstract void DisplayOutput(string output, ConsoleColor color);
 
         /// <summary>
         /// Gets a command from the users
         /// </summary>
-        string GetUserPrompt();
+        public abstract string GetUserPrompt();
 
         /// <summary>
         /// Displays a screen that prompts user to sign in
         /// </summary>
         /// <returns>The user's credentials</returns>
-        Credentials SignIn();
+        public abstract Credentials SignIn();
 
         /// <summary>
         /// Displays a screen that prompts user to sign up
         /// </summary>
         /// <returns>The user's credentials</returns>
-        Credentials SignUp();
+        public abstract Credentials SignUp();
 
         /// <summary>
         /// Displays a welcome screen
         /// </summary>
-        void Welcome();
+        public abstract void Welcome();
     }
 }

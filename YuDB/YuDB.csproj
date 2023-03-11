@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Autofac" Version="7.0.0" />
     <PackageReference Include="LazyCache" Version="2.4.0" />
     <PackageReference Include="Microsoft.ClearScript" Version="7.3.7" />
     <PackageReference Include="Microsoft.ClearScript.Core" Version="7.3.7" />

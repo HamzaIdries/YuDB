@@ -64,7 +64,7 @@ namespace YuDB.Security
             storageEngine.Store(passwordFilePath, JsonSerializer.SerializeToUtf8Bytes(passwordFile));
         }
 
-        public override bool IsUserRegistered()
+        public override bool UserRegistered()
         {
             try
             {
