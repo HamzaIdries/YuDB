@@ -1,10 +1,8 @@
 ﻿namespace YuDB.Constraints
 {
-    class NumberTypeConstraint : PrimitiveTypeConstraint<decimal>
-    {
-        override public string ToString()
-        {
-            return "TypeConstraint: Number";
-        }
-    }
+    /// <summary>
+    /// Ensures that a JSON node is a number
+    /// </summary>
+    internal class NumberTypeConstraint : PrimitiveTypeConstraint<decimal>
+    { }
 }

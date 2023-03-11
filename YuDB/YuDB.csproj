@@ -21,6 +21,9 @@
     <None Update="documentB.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="schema.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="yu.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

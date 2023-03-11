@@ -1,10 +1,8 @@
 ﻿namespace YuDB.Constraints
 {
-    class StringTypeConstraint : PrimitiveTypeConstraint<string>
-    {
-        override public string ToString()
-        {
-            return "TypeConstraint: String";
-        }
-    }
+    /// <summary>
+    /// Ensures that a JSON node is a string
+    /// </summary>
+    internal class StringTypeConstraint : PrimitiveTypeConstraint<string>
+    { }
 }

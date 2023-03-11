@@ -1,10 +1,8 @@
 ﻿namespace YuDB.Constraints
 {
-    class BooleanTypeConstraint : PrimitiveTypeConstraint<bool>
-    {
-        public override string ToString()
-        {
-            return "TypeConstraint: Boolean";
-        }
-    }
+    /// <summary>
+    /// Ensures that a JSON node is a boolean
+    /// </summary>
+    internal class BooleanTypeConstraint : PrimitiveTypeConstraint<bool>
+    { }
 }

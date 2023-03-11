@@ -2,6 +2,9 @@
 
 namespace YuDB.Constraints
 {
+    /// <summary>
+    /// Ensure that JSON node is an array where all the elements are of the same type
+    /// </summary>
     public class ArrayTypeConstraint : ITypeConstraint
     {
         private readonly ITypeConstraint element;
@@ -11,31 +14,22 @@ namespace YuDB.Constraints
         {
             this.element = element;
         }
-        public bool Validate(JsonNode document, IEnumerable<string> context)
+
+        public override void Validate(JsonNode document, IEnumerable<string> context)
         {
-            JsonNode current = ITypeConstraint.TraverseContext(document, context)!;
-            if (current != null)
+            var current = TraverseContext(document, context)!;
+            try
             {
-                try
+                var arr = current.AsArray();
+                for (int i = 0; i < arr.Count; i++)
                 {
-                    var arr = current.AsArray();
-                    for (int i = 0; i < arr.Count; i++)
-                    {
-                        var newContext = new List<string>(context) { string.Format("[{0}]", i) };
-                        if (!element.Validate(document, newContext))
-                            return false;
-                    }
-                    return true;
-                }
-                catch (Exception)
-                {
-                    return false;
+                    var newContext = new List<string>(context) { string.Format("[{0}]", i) };
+                    element.Validate(document, newContext);
                 }
             }
-            else
+            catch (InvalidOperationException)
             {
-                // TODO: Handle exceptions
-                throw new Exception();
+                throw new Exception($"The node at '{FormatContext(context)}' is not a valid JSON array");
             }
         }
     }

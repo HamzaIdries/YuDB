@@ -5,34 +5,27 @@ using YuDB.Storage;
 
 namespace YuDB.Security
 {
-    class PasswordFile
+    public class SecurityEngine : AbstractSecurityEngine
     {
-        private readonly string username;
-        private readonly string hashedPassword;
-        private readonly string salt;
+        private readonly AbstractStorageEngine storageEngine;
 
-        public string Username => username;
-        public string HashedPassword => hashedPassword;
-        public string Salt => salt;
-
-        public PasswordFile(string username, string hashedPassword, string salt)
-        {
-            this.username = username;
-            this.hashedPassword = hashedPassword;
-            this.salt = salt;
-        }
-    }
-    public class SecurityEngine : ISecurityEngine
-    {
-        private readonly IStorageEngine storageEngine;
-        public SecurityEngine(IStorageEngine storageEngine)
+        public SecurityEngine(AbstractStorageEngine storageEngine)
         {
             this.storageEngine = storageEngine;
         }
+
+        /// <summary>
+        /// Generates a random Guid to be used as a salt. This is valid since Guid is sufficently
+        /// long and uses a fairly secure random number generation algorithm
+        /// </summary>
         private static string GenerateSalt()
         {
             return Guid.NewGuid().ToString();
         }
+
+        /// <summary>
+        /// Hashes a password with the given salt using SHA256
+        /// </summary>
         private static string HashPassword(string password, string salt)
         {
             using (var sha256 = SHA256.Create())
@@ -40,53 +33,47 @@ namespace YuDB.Security
                 var hashedPasswordBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password + salt));
                 var sb = new StringBuilder();
                 foreach (var b in hashedPasswordBytes)
-                {
                     sb.Append(b.ToString("x2"));
-                }
                 return sb.ToString();
             }
         }
-        private void StorePasswordFile(string username, string password)
+
+        private PasswordFile GetPasswordFile()
         {
-            if (!File.Exists(Config.Get().PasswordFilePath))
+            var passwordFileBytes = storageEngine.Read(DirectoriesStructure.GetPasswordFilePath());
+            var passwordFile = JsonSerializer.Deserialize<PasswordFile>(passwordFileBytes)!;
+            return passwordFile;
+        }
+
+        public override bool Authenticate(Credentials credentials)
+        {
+            PasswordFile passwordFile = GetPasswordFile();
+            return
+                credentials.Username == passwordFile.Username &&
+                HashPassword(credentials.Password, passwordFile.Salt) == passwordFile.HashedPassword;
+        }
+
+        public override void CreateUser(Credentials credentials)
+        {
+            var passwordFilePath = DirectoriesStructure.GetPasswordFilePath();
+            string salt = GenerateSalt();
+            var passwordFile = new PasswordFile(
+                credentials.Username,
+                HashPassword(credentials.Password, salt),
+                salt);
+            storageEngine.Store(passwordFilePath, JsonSerializer.SerializeToUtf8Bytes(passwordFile));
+        }
+
+        public override bool IsUserRegistered()
+        {
+            try
             {
-                string salt = GenerateSalt();
-                var passwordFile = new PasswordFile(
-                    username,
-                    HashPassword(password, salt),
-                    salt
-                );
-                storageEngine.Store(Config.Get().PasswordFilePath, JsonSerializer.SerializeToUtf8Bytes(passwordFile));
+                return storageEngine.Read(DirectoriesStructure.GetPasswordFilePath()) != null;
             }
-        }
-        public bool Authenticate(string username, string password)
-        {
-            var passwordFile = JsonSerializer.Deserialize<PasswordFile>(File.ReadAllText(Config.Get().PasswordFilePath))!;
-            return username == passwordFile.Username &&
-                    HashPassword(password, passwordFile.Salt) == passwordFile.HashedPassword;
-        }
-
-        public void ChangePassword(string newPassword)
-        {
-            var passwordFile = JsonSerializer.Deserialize<PasswordFile>(File.ReadAllText(Config.Get().PasswordFilePath))!;
-            var salt = GenerateSalt();
-            var newPasswordFile = new PasswordFile(
-                passwordFile.Username,
-                HashPassword(newPassword, salt),
-                salt
-            )!;
-            storageEngine.Store(Config.Get().PasswordFilePath, JsonSerializer.SerializeToUtf8Bytes(newPasswordFile));
-        }
-
-        public void ChangeUsername(string newUsername)
-        {
-            var passwordFile = JsonSerializer.Deserialize<PasswordFile>(File.ReadAllText(Config.Get().PasswordFilePath))!;
-            var newPasswordFile = new PasswordFile(
-                newUsername,
-                passwordFile.HashedPassword,
-                passwordFile.Salt
-            )!;
-            storageEngine.Store(Config.Get().PasswordFilePath, JsonSerializer.SerializeToUtf8Bytes(passwordFile));
+            catch (Exception)
+            {
+                return false;
+            }
         }
     }
 }

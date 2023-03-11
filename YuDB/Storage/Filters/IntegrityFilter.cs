@@ -2,14 +2,25 @@
 
 namespace YuDB.Storage.Filters
 {
-    public class IntegrityFilter : IFileFilter
+    /// <summary>
+    /// Ensures that document have not been illegally modified by checking its HMAC. The used
+    /// hash function is SHA256
+    /// </summary>
+    public class IntegrityFilter : AbstractFileFilter
     {
         private readonly byte[] key;
+
         public IntegrityFilter(byte[] key)
         {
             this.key = key;
         }
-        public byte[]? Do(byte[] data)
+
+        /// <summary>
+        /// Appends an HMAC to a document
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public override byte[] Do(byte[] data)
         {
             var hash = HMACSHA256.HashData(key, data);
             byte[] file = new byte[hash.Length + data.Length];
@@ -17,14 +28,20 @@ namespace YuDB.Storage.Filters
             Array.Copy(data, 0, file, hash.Length, data.Length);
             return file;
         }
-        public byte[]? Undo(byte[] file)
+
+        /// <summary>
+        /// Removes the HMAC from the document and uses to verify that the document wasn't illegally modified.
+        /// If it was illegally modified, an exception is thrown
+        /// </summary>
+        /// <exception cref="FileFilterException"></exception>
+        public override byte[] Undo(byte[] file)
         {
             var actualHash = file.Take(32).ToArray();
             var data = file.Skip(32).ToArray();
             var expectedHash = HMACSHA256.HashData(key, data);
-            return expectedHash.SequenceEqual(actualHash)
-                ? data
-                : null;
+            if (expectedHash.SequenceEqual(actualHash))
+                return data;
+            else throw new IntegrityFailException("Document was illegally modified");
         }
     }
 }

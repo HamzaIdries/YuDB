@@ -2,19 +2,21 @@
 
 namespace YuDB.Constraints
 {
-    abstract class PrimitiveTypeConstraint<T> : ITypeConstraint
+    /// <summary>
+    /// Ensures that a JSON node is a valid primitive of type T
+    /// </summary>
+    internal abstract class PrimitiveTypeConstraint<T> : ITypeConstraint
     {
-        public bool Validate(JsonNode document, IEnumerable<string> context)
+        public override void Validate(JsonNode document, IEnumerable<string> context)
         {
-            var current = ITypeConstraint.TraverseContext(document, context)!;
+            var current = TraverseContext(document, context)!;
             try
             {
                 current.GetValue<T>();
-                return true;
             }
             catch (Exception)
             {
-                return false;
+                throw new DatabaseException($"The field {FormatContext(context)} must be a {typeof(T).Name}");
             }
         }
     }

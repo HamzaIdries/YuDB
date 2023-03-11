@@ -1,27 +1,36 @@
 ﻿namespace YuDB.Storage.Filters
 {
-    public class FileFiltersCollection : IFileFilter
+    /// <summary>
+    /// Applies an ordered list of filters in the given order
+    /// </summary>
+    public class FileFiltersCollection : AbstractFileFilter
     {
-        private List<IFileFilter> filters = new List<IFileFilter>();
-        public FileFiltersCollection(params IFileFilter[] filters)
+        private List<AbstractFileFilter> filters = new List<AbstractFileFilter>();
+
+        public FileFiltersCollection(params AbstractFileFilter[] filters)
         {
             this.filters.AddRange(filters);
         }
-        public byte[]? Do(byte[] data)
+
+        /// <summary>
+        /// Applies the provided list of filters in order
+        /// </summary>
+        /// <exception cref="FileFilterException"></exception>
+        public override byte[] Do(byte[] data)
         {
             foreach (var filter in filters)
-            {
                 data = filter.Do(data);
-            }
             return data;
         }
 
-        public byte[]? Undo(byte[] data)
+        /// <summary>
+        /// Removes the provided list of filters in reverse order
+        /// </summary>
+        /// <exception cref="FileFilterException"></exception>
+        public override byte[] Undo(byte[] data)
         {
-            foreach (var filter in filters.Reverse<IFileFilter>())
-            {
+            foreach (var filter in filters.Reverse<AbstractFileFilter>())
                 data = filter.Undo(data);
-            }
             return data;
         }
     }

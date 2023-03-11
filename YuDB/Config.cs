@@ -1,49 +1,69 @@
-﻿using System.Text.Json;
+﻿using System.Collections.Immutable;
+using System.Text.Json;
 
 namespace YuDB
 {
+    /// <summary>
+    /// Contains all the application configurations that are to be read from config.json file
+    /// </summary>
     public class Config
     {
-        private readonly string databasesDirectory;
-        private readonly string passwordFilePath;
-        private readonly string rootVariableName;
-        private readonly int port;
-        private readonly int queueSize;
-        private readonly int maxRequestLength;
-        public string DatabasesDirectory => databasesDirectory;
-        public string PasswordFilePath => passwordFilePath;
-        public string RootVariableName => rootVariableName;
-        public int Port => port;
-        public int QueueSize => queueSize;
-        public int MaxRequestLength => maxRequestLength;
+        private string? databasesDirectory;
 
-        private static Config? instance = null;
-        public Config(
-            string databasesDirectory, 
-            string passwordFilePath,
-            string rootVariableName, 
-            int port,
-            int queueSize,
-            int maxRequestLength)
+        private bool strictMode;
+
+        private string? unauthorisedModificationsPolicy;
+
+        public string DatabasesDirectory
         {
-            this.databasesDirectory = databasesDirectory;
-            this.passwordFilePath = passwordFilePath;
-            this.rootVariableName = rootVariableName;
-            this.port = port;
-            this.queueSize = queueSize;
-            this.maxRequestLength = maxRequestLength;
+            get
+            {
+                ArgumentNullException.ThrowIfNull(databasesDirectory, "DatabasesDirectory");
+                return databasesDirectory;
+            }
+            set { databasesDirectory = value; }
         }
+
+        public bool StrictMode
+        {
+            get => strictMode;
+            set { strictMode = value; }
+        }
+
+        public string UnauthorisedModificationsPolicy
+        {
+            get
+            {
+                ArgumentNullException.ThrowIfNull(unauthorisedModificationsPolicy, "UnauthorisedModificationsPolicy");
+                if (ImmutableArray.Create("ignore", "warning", "error").Contains(unauthorisedModificationsPolicy))
+                    return unauthorisedModificationsPolicy;
+                throw new DatabaseException($"{unauthorisedModificationsPolicy} is not a valid unauthorised modifications policy");
+            }
+            set { unauthorisedModificationsPolicy = value; }
+        }
+
+        private static Config? INSTANCE = null;
+
         public static Config Get()
         {
-            if (instance == null)
+            if (INSTANCE == null)
             {
-                var configurationFile = File.ReadAllText("./config.json");
-                instance = JsonSerializer.Deserialize<Config>(configurationFile, new JsonSerializerOptions()
+                try
                 {
-                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-                });
+                    var configFile = File.ReadAllText("./config.json")!;
+                    INSTANCE = JsonSerializer.Deserialize<Config>(
+                        configFile,
+                        new JsonSerializerOptions()
+                        {
+                            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+                        })!;
+                }
+                catch (Exception)
+                {
+                    throw new DatabaseException("An issue occurred while trying to read the config file");
+                }
             }
-            return instance;
+            return INSTANCE;
         }
     }
 }
