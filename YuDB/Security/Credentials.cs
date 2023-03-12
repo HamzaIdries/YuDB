@@ -2,16 +2,15 @@
 {
     public class Credentials
     {
-        private string username;
-
-        private string password;
-        public string Username => username;
-        public string Password => password;
-
+        private string _password;
+        private string _username;
         public Credentials(string username, string password)
         {
-            this.username = username;
-            this.password = password;
+            this._username = username;
+            this._password = password;
         }
+
+        public string Password => _password;
+        public string Username => _username;
     }
 }

@@ -5,7 +5,7 @@ namespace YuDB.Constraints
     /// <summary>
     /// Ensures that a JSON node is a valid primitive of type T
     /// </summary>
-    internal abstract class PrimitiveTypeConstraint<T> : ITypeConstraint
+    internal abstract class PrimitiveTypeConstraint<T> : AbstractConstraint
     {
         public override void Validate(JsonNode document, IEnumerable<string> context)
         {

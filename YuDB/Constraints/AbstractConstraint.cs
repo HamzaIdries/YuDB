@@ -12,7 +12,7 @@ namespace YuDB.Constraints
     [JsonDerivedType(typeof(BooleanTypeConstraint), "boolean")]
     [JsonDerivedType(typeof(ObjectTypeConstraint), "object")]
     [JsonDerivedType(typeof(ArrayTypeConstraint), "array")]
-    public abstract class ITypeConstraint
+    public abstract class AbstractConstraint
     {
         /// <summary>
         /// Ensures that a specific node in the JSON tree satisfies the required constraint.
@@ -22,6 +22,14 @@ namespace YuDB.Constraints
         /// <param name="context">The context array needed to reach the node</param>
         /// <exception cref="DatabaseException"></exception>
         public abstract void Validate(JsonNode document, IEnumerable<string> context);
+
+        /// <summary>
+        /// Formats a context array into a string of the form "$.field0.field1..."
+        /// </summary>
+        protected static string FormatContext(IEnumerable<string> context)
+        {
+            return string.Join(".", context);
+        }
 
         /// <summary>
         /// Traverses a JSON tree according to the context array to reach a specific node.
@@ -47,14 +55,6 @@ namespace YuDB.Constraints
                     return null;
             }
             return document;
-        }
-
-        /// <summary>
-        /// Formats a context array into a string of the form "$.field0.field1..."
-        /// </summary>
-        protected static string FormatContext(IEnumerable<string> context)
-        {
-            return "$." + string.Join(".", context);
         }
     }
 }

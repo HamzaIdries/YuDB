@@ -1,7 +1,13 @@
 ﻿namespace YuDB.Javascript
 {
+    /// <summary>
+    /// Manages the Javascript interface to the application
+    /// </summary>
     public abstract class AbstractJavascriptMapping
     {
-        public abstract string Evaluate(string command);
+        /// <summary>
+        /// Evaluates a Javascript command
+        /// </summary>
+        public abstract string? Evaluate(string command);
     }
 }

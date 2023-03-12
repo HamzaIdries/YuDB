@@ -1,69 +1,47 @@
-﻿using System.Collections.Immutable;
+﻿using System.Text;
 using System.Text.Json;
 
 namespace YuDB
 {
     /// <summary>
-    /// Contains all the application configurations that are to be read from config.json file
+    /// Provides access to the application's configurations
     /// </summary>
     public class Config
     {
-        private string? databasesDirectory;
-
-        private bool strictMode;
-
-        private string? unauthorisedModificationsPolicy;
-
-        public string DatabasesDirectory
-        {
-            get
+        private static ConfigFile CONFIG_FILE = JsonSerializer.Deserialize<ConfigFile>(
+            File.ReadAllText("./config.json"),
+            new JsonSerializerOptions()
             {
-                ArgumentNullException.ThrowIfNull(databasesDirectory, "DatabasesDirectory");
-                return databasesDirectory;
-            }
-            set { databasesDirectory = value; }
-        }
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+            })!;
 
-        public bool StrictMode
+        public static string DatabasesDirectory => CONFIG_FILE.DatabasesDirectory;
+        public static bool StrictMode => CONFIG_FILE.StrictMode;
+        public static string UnauthorisedModificationsPolicy => CONFIG_FILE.UnauthorisedModificationsPolicy;
+        public static string BackupPath => CONFIG_FILE.BackupPath;
+    }
+
+    /// <summary>
+    /// Contains all the application configurations that are to be read from config.json file
+    /// </summary>
+    public class ConfigFile
+    {
+        private readonly string _databasesDirectory;
+        private readonly string _backupPath;
+        private readonly bool _strictMode;
+        private readonly string _unauthorisedModificationsPolicy;
+
+        public ConfigFile(string databasesDirectory, bool strictMode, string unauthorisedModificationsPolicy, string backupPath)
         {
-            get => strictMode;
-            set { strictMode = value; }
+            _databasesDirectory = databasesDirectory;
+            _strictMode = strictMode;
+            _unauthorisedModificationsPolicy = unauthorisedModificationsPolicy;
+            _backupPath = backupPath;
         }
 
-        public string UnauthorisedModificationsPolicy
-        {
-            get
-            {
-                ArgumentNullException.ThrowIfNull(unauthorisedModificationsPolicy, "UnauthorisedModificationsPolicy");
-                if (ImmutableArray.Create("ignore", "warning", "error").Contains(unauthorisedModificationsPolicy))
-                    return unauthorisedModificationsPolicy;
-                throw new DatabaseException($"{unauthorisedModificationsPolicy} is not a valid unauthorised modifications policy");
-            }
-            set { unauthorisedModificationsPolicy = value; }
-        }
-
-        private static Config? INSTANCE = null;
-
-        public static Config Get()
-        {
-            if (INSTANCE == null)
-            {
-                try
-                {
-                    var configFile = File.ReadAllText("./config.json")!;
-                    INSTANCE = JsonSerializer.Deserialize<Config>(
-                        configFile,
-                        new JsonSerializerOptions()
-                        {
-                            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-                        })!;
-                }
-                catch (Exception)
-                {
-                    throw new DatabaseException("An issue occurred while trying to read the config file");
-                }
-            }
-            return INSTANCE;
-        }
+        public string DatabasesDirectory => _databasesDirectory;
+        public bool StrictMode => _strictMode;
+        public string UnauthorisedModificationsPolicy => _unauthorisedModificationsPolicy;
+        public string BackupPath => _backupPath;
     }
 }

@@ -6,22 +6,22 @@ namespace YuDB.Constraints
     /// <summary>
     /// Ensures that a JSON node is a JSON object
     /// </summary>
-    internal class ObjectTypeConstraint : ITypeConstraint
+    internal class ObjectTypeConstraint : AbstractConstraint
     {
-        private Dictionary<string, ITypeConstraint> properties = new Dictionary<string, ITypeConstraint>();
+        private Dictionary<string, AbstractConstraint> _properties = new Dictionary<string, AbstractConstraint>();
 
-        public Dictionary<string, ITypeConstraint> Properties
+        private ISet<string> _required = new HashSet<string>();
+
+        public Dictionary<string, AbstractConstraint> Properties
         {
-            get { return properties; }
-            set { properties = value; }
+            get { return _properties; }
+            set { _properties = value; }
         }
-
-        private ISet<string> required = new HashSet<string>();
 
         public ISet<string> Required
         {
-            get { return required; }
-            set { required = value; }
+            get { return _required; }
+            set { _required = value; }
         }
 
         /// <summary>
@@ -52,20 +52,20 @@ namespace YuDB.Constraints
             try
             {
                 var obj = current.AsObject();
-                foreach (var property in properties)
+                foreach (var property in _properties)
                 {
                     var newContext = new List<string>(context) { property.Key };
                     var jsonNode = TraverseContext(document, newContext);
-                    if (jsonNode == null && required.Contains(property.Key))
+                    if (jsonNode == null && _required.Contains(property.Key))
                         throw new DatabaseException($"The field '{property.Key}' is missing but is required");
                     property.Value.Validate(document, newContext);
                 }
                 // If strict mode is enabled, ensure that new additional undefined fields are used
-                if (Config.Get().StrictMode)
+                if (Config.StrictMode)
                 {
                     foreach (var entry in obj)
                     {
-                        if (!properties.ContainsKey(entry.Key))
+                        if (!_properties.ContainsKey(entry.Key))
                             throw new DatabaseException($"The field {entry.Key} is not defined by the schema, and strict mode is enabled");
                     }
                 }

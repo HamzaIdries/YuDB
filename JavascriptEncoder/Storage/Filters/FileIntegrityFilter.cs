@@ -8,11 +8,11 @@ namespace YuDB.Storage.Filters
     /// </summary>
     public class FileIntegrityFilter : AbstractFileFilter
     {
-        private readonly byte[] _key;
+        private readonly byte[] key;
 
         public FileIntegrityFilter(byte[] key)
         {
-            _key = key;
+            this.key = key;
         }
 
         /// <summary>
@@ -22,7 +22,7 @@ namespace YuDB.Storage.Filters
         /// <returns></returns>
         public override byte[] Do(byte[] data)
         {
-            var hash = HMACSHA256.HashData(_key, data);
+            var hash = HMACSHA256.HashData(key, data);
             byte[] file = new byte[hash.Length + data.Length];
             Array.Copy(hash, file, hash.Length);
             Array.Copy(data, 0, file, hash.Length, data.Length);
@@ -38,10 +38,10 @@ namespace YuDB.Storage.Filters
         {
             var actualHash = file.Take(32).ToArray();
             var data = file.Skip(32).ToArray();
-            var expectedHash = HMACSHA256.HashData(_key, data);
+            var expectedHash = HMACSHA256.HashData(key, data);
             if (expectedHash.SequenceEqual(actualHash))
                 return data;
-            else throw new IntegrityFailException("Document was illegally modified");
+            else throw new Exception("Document was illegally modified");
         }
     }
 }

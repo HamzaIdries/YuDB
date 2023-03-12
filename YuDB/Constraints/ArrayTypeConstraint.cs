@@ -5,16 +5,15 @@ namespace YuDB.Constraints
     /// <summary>
     /// Ensure that JSON node is an array where all the elements are of the same type
     /// </summary>
-    public class ArrayTypeConstraint : ITypeConstraint
+    public class ArrayTypeConstraint : AbstractConstraint
     {
-        private readonly ITypeConstraint element;
-        public ITypeConstraint Element => element;
-
-        public ArrayTypeConstraint(ITypeConstraint element)
+        private readonly AbstractConstraint _element;
+        public ArrayTypeConstraint(AbstractConstraint element)
         {
-            this.element = element;
+            this._element = element;
         }
 
+        public AbstractConstraint Element => _element;
         public override void Validate(JsonNode document, IEnumerable<string> context)
         {
             var current = TraverseContext(document, context)!;
@@ -24,7 +23,7 @@ namespace YuDB.Constraints
                 for (int i = 0; i < arr.Count; i++)
                 {
                     var newContext = new List<string>(context) { string.Format("[{0}]", i) };
-                    element.Validate(document, newContext);
+                    _element.Validate(document, newContext);
                 }
             }
             catch (InvalidOperationException)

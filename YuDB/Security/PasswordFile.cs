@@ -6,21 +6,22 @@
     /// </summary>
     internal class PasswordFile
     {
-        private readonly string username;
+        private readonly string _encryptedToken;
+        private readonly string _hashedPassword;
+        private readonly string _salt;
+        private readonly string _username;
 
-        private readonly string hashedPassword;
-
-        private readonly string salt;
-
-        public string Username => username;
-        public string HashedPassword => hashedPassword;
-        public string Salt => salt;
-
-        public PasswordFile(string username, string hashedPassword, string salt)
+        public PasswordFile(string username, string hashedPassword, string salt, string encryptedToken)
         {
-            this.username = username;
-            this.hashedPassword = hashedPassword;
-            this.salt = salt;
+            _username = username;
+            _hashedPassword = hashedPassword;
+            _salt = salt;
+            _encryptedToken = encryptedToken;
         }
+
+        public string EncryptedToken => _encryptedToken;
+        public string HashedPassword => _hashedPassword;
+        public string Salt => _salt;
+        public string Username => _username;
     }
 }

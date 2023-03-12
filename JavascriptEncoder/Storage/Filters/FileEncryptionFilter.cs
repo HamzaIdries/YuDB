@@ -1,4 +1,5 @@
 ﻿using System.Security.Cryptography;
+using System.Text;
 
 namespace YuDB.Storage.Filters
 {
@@ -7,20 +8,20 @@ namespace YuDB.Storage.Filters
     /// </summary>
     public class FileEncryptionFilter : AbstractFileFilter, IDisposable
     {
-        private readonly Aes _aes;
+        private readonly Aes aes;
 
-        private readonly byte[] _IV;
+        private readonly byte[] IV;
 
         public FileEncryptionFilter(byte[] token, byte[] IV)
         {
-            _IV = IV;
-            _aes = Aes.Create();
-            _aes.Key = token;
+            this.IV = IV;
+            aes = Aes.Create();
+            aes.Key = token;
         }
 
         public void Dispose()
         {
-            _aes.Dispose();
+            aes.Dispose();
         }
 
         /// <summary>
@@ -32,7 +33,7 @@ namespace YuDB.Storage.Filters
         {
             try
             {
-                return _aes.EncryptCbc(data, _IV, PaddingMode.PKCS7);
+                return aes.EncryptCbc(data, IV, PaddingMode.PKCS7);
             }
             catch (Exception ex)
             {
@@ -49,7 +50,7 @@ namespace YuDB.Storage.Filters
         {
             try
             {
-                return _aes.DecryptCbc(data, _IV, PaddingMode.PKCS7);
+                return aes.DecryptCbc(data, IV, PaddingMode.PKCS7);
             }
             catch (Exception ex)
             {

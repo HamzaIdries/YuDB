@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "JavascriptEncoder": {
+      "commandName": "Project",
+      "commandLineArgs": "1 2 3"
+    }
+  }
+}

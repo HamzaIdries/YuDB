@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using Autofac.Features.AttributeFilters;
+using System.Text;
 using YuDB.Constraints;
 using YuDB.IDGenerators;
 using YuDB.Storage;
@@ -8,14 +9,13 @@ namespace YuDB.Managers
 {
     public class DatabasesManager : AbstractDatabasesManager
     {
-        private readonly AbstractStorageEngine storageEngine;
+        private readonly AbstractIDGenerator _idGenerator;
+        private readonly AbstractStorageEngine _storageEngine;
 
-        private readonly AbstractIDGenerator idGenerator;
-
-        public DatabasesManager(AbstractStorageEngine storageEngine, AbstractIDGenerator idGenerator)
+        public DatabasesManager([KeyFilter("documentsStorageEngine")] AbstractStorageEngine storageEngine, AbstractIDGenerator idGenerator)
         {
-            this.storageEngine = storageEngine;
-            this.idGenerator = idGenerator;
+            _storageEngine = storageEngine;
+            _idGenerator = idGenerator;
         }
 
         public override void CreateCollection(string databaseName, string collectionName, string schema)
@@ -35,7 +35,7 @@ namespace YuDB.Managers
             // And finally, store the schema
             var schemaDocumentBytes = Encoding.UTF8.GetBytes(schema);
             var schemaPath = DirectoriesStructure.GetSchemaPath(databaseName, collectionName);
-            storageEngine.Store(schemaPath, schemaDocumentBytes);
+            _storageEngine.Store(schemaPath, schemaDocumentBytes);
         }
 
         public override void CreateDatabase(string databaseName)
@@ -68,7 +68,7 @@ namespace YuDB.Managers
         public override void DeleteDocument(string databaseName, string collectionName, string documentID)
         {
             string documentPath = DirectoriesStructure.GetDocumentPath(databaseName, collectionName, documentID);
-            storageEngine.Delete(documentPath);
+            _storageEngine.Delete(documentPath);
         }
 
         public override int DeleteDocuments(string databaseName, string collectionName, Func<string, bool> predicate)
@@ -123,7 +123,7 @@ namespace YuDB.Managers
                 }
                 catch (IntegrityFailException ex)
                 {
-                    var policy = Config.Get().UnauthorisedModificationsPolicy;
+                    var policy = Config.UnauthorisedModificationsPolicy;
                     if (policy == "warning")
                         result.Add($"{{\"warning\": \"'{documentID}' was illegaly modified\"}}");
                     else if (policy == "error")
@@ -159,13 +159,13 @@ namespace YuDB.Managers
             schema.Validate(document);
 
             // Then, append an id to the document
-            var ID = idGenerator.GenerateID();
-            document = idGenerator.AddID(document, ID);
+            var ID = _idGenerator.GenerateID();
+            document = _idGenerator.AddID(document, ID);
 
             // Finally, store the document
             var documentBytes = Encoding.UTF8.GetBytes(document);
             var documentPath = DirectoriesStructure.GetDocumentPath(databaseName, collectionName, ID);
-            storageEngine.Store(documentPath, documentBytes);
+            _storageEngine.Store(documentPath, documentBytes);
         }
 
         /// <summary>
@@ -176,7 +176,7 @@ namespace YuDB.Managers
             try
             {
                 var schemaPath = DirectoriesStructure.GetSchemaPath(databaseName, collectionName);
-                var schmeaBytes = storageEngine.Read(schemaPath);
+                var schmeaBytes = _storageEngine.Read(schemaPath);
                 var schemaString = Encoding.UTF8.GetString(schmeaBytes);
                 var schema = ObjectTypeConstraint.FromString(schemaString);
                 return schema;
@@ -190,7 +190,7 @@ namespace YuDB.Managers
         private string ReadDocument(string databaseName, string collectionName, string documentID)
         {
             string documentPath = DirectoriesStructure.GetDocumentPath(databaseName, collectionName, documentID);
-            var documentBytes = storageEngine.Read(documentPath);
+            var documentBytes = _storageEngine.Read(documentPath);
             return Encoding.UTF8.GetString(documentBytes);
         }
 
@@ -201,12 +201,12 @@ namespace YuDB.Managers
             schema.Validate(updatedDocument);
 
             // Then, append the same original id to the updated document
-            updatedDocument = idGenerator.AddID(updatedDocument, documentID);
+            updatedDocument = _idGenerator.AddID(updatedDocument, documentID);
 
             // Finally, update the document
             var documentPath = DirectoriesStructure.GetDocumentPath(databaseName, collectionName, documentID);
             var updatedDocumentBytes = Encoding.UTF8.GetBytes(updatedDocument);
-            storageEngine.Replace(documentPath, updatedDocumentBytes);
+            _storageEngine.Replace(documentPath, updatedDocumentBytes);
         }
     }
 }

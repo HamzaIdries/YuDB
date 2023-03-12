@@ -1,31 +1,17 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
-  <Class Name="YuDB.Security.AbstractSecurityEngine">
-    <Position X="8.25" Y="8.75" Width="1.75" />
+  <Class Name="YuDB.Backup.AbstractBackupManager">
+    <Position X="7.75" Y="4" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAQAAAAAAAAAAAAIAAAAAAAAAAAAAAQAAAAA=</HashCode>
-      <FileName>Security\AbstractSecurityEngine.cs</FileName>
+      <HashCode>AgAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Backup\AbstractBackupManager.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="YuDB.Security.Credentials" Collapsed="true">
-    <Position X="8.75" Y="6.5" Width="1.5" />
+  <Class Name="YuDB.Backup.BackupManager">
+    <Position X="5.25" Y="4" Width="1.75" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAQAAAAEAAAAAAAACAAAAAgAAAAA=</HashCode>
-      <FileName>Security\Credentials.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="YuDB.Security.PasswordFile" Collapsed="true">
-    <Position X="10.5" Y="6.5" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AABAAAAAQAAAAAAAASAAAAEgAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Security\PasswordFile.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="YuDB.Security.SecurityEngine">
-    <Position X="6" Y="8.75" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAQAEAAAAAAAAAgIAAgAAAAAAAAAAAQAAAQA=</HashCode>
-      <FileName>Security\SecurityEngine.cs</FileName>
+      <HashCode>AgAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Backup\BackupManager.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Font Name="Segoe UI" Size="9" />

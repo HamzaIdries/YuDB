@@ -6,9 +6,9 @@
     public abstract class AbstractStorageEngine
     {
         /// <summary>
-        /// Stores a document in the given path
+        /// Deletes a document in the given path
         /// </summary>
-        public abstract void Store(string documentPath, byte[] document);
+        public abstract void Delete(string documentPath);
 
         /// <summary>
         /// Reads a document from the given path
@@ -21,8 +21,8 @@
         public abstract void Replace(string documentPath, byte[] document);
 
         /// <summary>
-        /// Deletes a document in the given path
+        /// Stores a document in the given path
         /// </summary>
-        public abstract void Delete(string documentPath);
+        public abstract void Store(string documentPath, byte[] document);
     }
 }

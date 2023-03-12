@@ -10,7 +10,7 @@
         /// </summary>
         public static string GetDatabasesDirectory()
         {
-            var databasesDirectory = Config.Get().DatabasesDirectory;
+            var databasesDirectory = Config.DatabasesDirectory;
             return databasesDirectory;
         }
 
@@ -60,7 +60,7 @@
 
         public static string GetPasswordFilePath()
         {
-            return $"./{Config.Get().DatabasesDirectory}/pwd.json";
+            return $"./{Config.DatabasesDirectory}/pwd.json";
         }
     }
 }

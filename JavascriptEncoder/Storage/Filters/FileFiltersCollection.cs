@@ -5,11 +5,11 @@
     /// </summary>
     public class FileFiltersCollection : AbstractFileFilter
     {
-        private List<AbstractFileFilter> _filters = new List<AbstractFileFilter>();
+        private List<AbstractFileFilter> filters = new List<AbstractFileFilter>();
 
         public FileFiltersCollection(params AbstractFileFilter[] filters)
         {
-            _filters.AddRange(filters);
+            this.filters.AddRange(filters);
         }
 
         /// <summary>
@@ -17,7 +17,7 @@
         /// </summary>
         public void Add(AbstractFileFilter fileFilter)
         {
-            _filters.Add(fileFilter);
+            filters.Add(fileFilter);
         }
 
         /// <summary>
@@ -26,7 +26,7 @@
         /// <exception cref="FileFilterException"></exception>
         public override byte[] Do(byte[] data)
         {
-            foreach (var filter in _filters)
+            foreach (var filter in filters)
                 data = filter.Do(data);
             return data;
         }
@@ -37,7 +37,7 @@
         /// <exception cref="FileFilterException"></exception>
         public override byte[] Undo(byte[] data)
         {
-            foreach (var filter in _filters.Reverse<AbstractFileFilter>())
+            foreach (var filter in filters.Reverse<AbstractFileFilter>())
                 data = filter.Undo(data);
             return data;
         }

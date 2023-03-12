@@ -2,6 +2,8 @@
 {
     public class IntegrityFailException : DatabaseException
     {
-        public IntegrityFailException(string message) : base(message) { }
+        public IntegrityFailException(string message) : base(message)
+        {
+        }
     }
 }
