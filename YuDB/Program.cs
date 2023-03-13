@@ -4,7 +4,7 @@ internal class Program
 {
     private static void Main(string[] args)
     {
-        var controller = new BenchmarkController(true);
+        var controller = new Controller();
         controller.Start();
     }
 }
