@@ -4,8 +4,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.4.33205.214
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "YuDB", "YuDB\YuDB.csproj", "{BD93E20F-524C-41AA-AD17-C3C076359DE5}"
+	ProjectSection(ProjectDependencies) = postProject
+		{A2AFA5D3-3B0A-44CE-BF8A-14161EAA1306} = {A2AFA5D3-3B0A-44CE-BF8A-14161EAA1306}
+	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JavascriptEncoder", "JavascriptEncoder\JavascriptEncoder.csproj", "{A2AFA5D3-3B0A-44CE-BF8A-14161EAA1306}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JavascriptEncoder", "JavascriptEncoder\JavascriptEncoder.csproj", "{A2AFA5D3-3B0A-44CE-BF8A-14161EAA1306}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
